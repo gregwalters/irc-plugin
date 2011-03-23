@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+
+<!--
+  IRC Plugin for Hyperic Written by Greg Walters
+  Copyright (C) 2011, Contegix, LLC, www.contegix.com
+
+  This is free software; you can redistribute it and/or modify
+  it under the terms version 2 of the GNU General Public License as
+  published by the Free Software Foundation. This program is distributed
+  in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+  even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE. See the GNU General Public License for more
+  details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+  USA.
+
+  About Contegix:
+  Contegix provides high-level managed hosting solutions for enterprise applications 
+  and infrastructure.  The company delivers proactive, passionate support that is 
+  unparalleled in the industry. All Contegix solutions encompass supporting 
+  dedicated hardware and operating system management, deploying and configuring 
+  software, and offering complete licensing management. Contegix's award-winning 
+  service is delivered by a staff of Tier-3 engineers from its global headquarters in 
+  St. Louis, MO. Current clients and partners include Six Apart, ReadWriteWeb, VMware 
+  and Atlassian. For additional information, visit www.contegix.com or call 1(877) 426-6834.
+ -->
+
+<plugin name="IRC">
+
+<classpath>
+ <include name="pdk/plugins/netservices-plugin.jar"/>
+</classpath>
+
+  <config name="sockaddr" type="global">
+    <option name="hostname"
+            description="Hostname"
+            default="localhost"/>
+
+    <option name="port"
+            description="Port"
+            type="port"/>
+
+    <option name="sotimeout"
+            description="Socket Timeout (in seconds)"
+            default="10"
+            type="int"/>
+  </config>
+
+  <config name="ssl" type="global">
+    <option name="ssl"
+            description="Use SSL"
+            type="boolean"
+            optional="true"
+            default="false"/>
+  </config>
+
+  <config name="sslsockaddr"
+          include="ssl,sockaddr"
+          type="global"/>
+
+  <!-- disabled by default, change to true for testing -->
+  <filter name="netstat" value="false"/>
+
+  <metrics name="sockaddr-netstat">
+    <metric name="Inbound Connections"
+            template="${sockaddr.template}:${alias}"
+            indicator="${netstat}"
+            category="Throughput"/>
+
+    <metric name="Outbound Connections"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="All Inbound Connections"
+            template="${sockaddr.template}:${alias}"
+            indicator="${netstat}"
+            category="Throughput"/>
+
+    <metric name="All Outbound Connections"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State ESTABLISHED"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State SYN_SENT"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State SYN_RECV"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State FIN_WAIT1"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State FIN_WAIT2"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State TIME_WAIT"
+            template="${sockaddr.template}:${alias}"
+            indicator="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State CLOSE"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State CLOSE_WAIT"
+            template="${sockaddr.template}:${alias}"
+            indicator="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State LAST_ACK"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+
+    <metric name="State CLOSING"
+            template="${sockaddr.template}:${alias}"
+            defaultOn="${netstat}"
+            category="Throughput"/>
+  </metrics>
+
+    <service name="IRC"
+             description="IRC/s Monitor">
+
+      <property name="port" value="6667"/>
+      <property name="sslport" value="6669"/>
+
+      <config include="sslsockaddr"/>
+
+      <plugin type="collector" class="org.gregwalters.hyperic.plugin.irc.IRCCollector"/>
+
+      <metric name="Availability"
+              indicator="true"/>
+
+      <metric name="Response Time"
+              indicator="true"
+              category="Throughput"
+              units="ms"/>
+
+      <metrics include="sockaddr-netstat"/>
+    </service>
+</plugin>

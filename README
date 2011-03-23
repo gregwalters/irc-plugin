@@ -1,0 +1,11 @@
+IRC Hyperic Plugin
+
+Note: This is a community contributed plugin and is not
+officially supported by VMware. Please seek help
+via the community forums.
+
+This plugin has only been tested against InspIRCd (www.inspircd.org) 
+though it should work against any server that returns "Looking up your hostname"
+upon connecting to it.
+
+Documentation available at https://github.com/gregwalters/irc-plugin
